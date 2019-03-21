@@ -1,10 +1,12 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AlertController, IonList, LoadingController, ModalController, ToastController } from '@ionic/angular';
+import { take } from 'rxjs/operators';
 
 import { ScheduleFilterPage } from '../schedule-filter/schedule-filter';
 import { ConferenceData } from '../../providers/conference-data';
 import { UserData } from '../../providers/user-data';
+import { ActivatedRouteService } from '../../providers/activated-route.service';
 
 @Component({
   selector: 'page-schedule',
@@ -30,12 +32,23 @@ export class SchedulePage implements OnInit {
     public modalCtrl: ModalController,
     public router: Router,
     public toastCtrl: ToastController,
-    public user: UserData
+    public user: UserData,
+    public route: ActivatedRoute,
+    public activatedRouteService: ActivatedRouteService
   ) { }
 
   ngOnInit() {
     // this.app.setTitle('Schedule');
     this.updateSchedule();
+  }
+
+  goto(commands: any[]) {
+    this.activatedRouteService
+      .getActivatedRoute(this as Component)
+      .pipe(take(1))
+      .subscribe(route => {
+        this.router.navigate(commands, { relativeTo: route });
+      });
   }
 
   updateSchedule() {
